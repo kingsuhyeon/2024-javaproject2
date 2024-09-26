@@ -10,8 +10,27 @@ public class MergeMain {
     static EntityManagerFactory enf = Persistence.createEntityManagerFactory("jpa");
 
     public static void main(String[] args) {
-        Member member = createMember("memberA", "회원1", 20);
+        Member member = createMember("memberC", "회원2", 30);
         System.out.println(member.getUsername());
+        //준영속
+        member.setUsername("memberB");
+
+        mergeMember(member);
+    }
+
+    static void mergeMember(Member member) {
+        EntityManager em = enf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+
+        tx.begin();
+
+        // member는 준영속상태
+
+        Member mergeMember = em.merge(member);
+        tx.commit();
+
+        System.out.println("member = "+member.getUsername());
+        System.out.println("mergeMember = "+mergeMember.getUsername());
     }
 
     static Member createMember(String id, String username, Integer age) {
